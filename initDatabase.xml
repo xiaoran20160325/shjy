@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="gb2312"?>
+<project name="initData" default="main" basedir=".">
+<target name="init-properties" description="property initialization">
+	<property file="initDatabase.properties"/>
+	<property name="lib.dir"        value="./WEB-INF/lib" />
+	<path id="local.class.path">
+		<fileset dir="${lib.dir}" includes="**/*.jar,**/*.zip" />
+	</path>    	
+</target>
+    
+<target depends="init-properties" name="createDB" description="Create database tables">
+         <echo message="Starting create database table..." />
+         <sql
+                driver="${driverClass}"
+                url="${url}"
+                userid="${userName}"
+                password="${password}"
+                classpathref="local.class.path"
+                onerror="abort"
+              >
+		<!-- Create tables of every item  Starting-->
+		<fileset dir="sql/${dbtype}/0_mvc/INIT/1_Create">
+			<include name="*.sql"/>    		
+		</fileset>
+		
+		<fileset dir="sql/${dbtype}/1_bsp/INIT/1_Create">
+			<include name="*.sql"/>    		
+		</fileset>
+		
+		<fileset dir="sql/${dbtype}/2_bpm/INIT/1_Create">
+			<include name="*.sql"/>    		
+		</fileset>
+		
+		<fileset dir="sql/${dbtype}/3_mda/INIT/1_Create">
+			<include name="*.sql"/>
+		</fileset>
+		
+		<fileset dir="sql/${dbtype}/4_mp/INIT/1_Create">
+			<include name="*.sql"/>
+		</fileset>
+		<!-- Create tables of every item  Ending -->	
+	</sql>
+	<echo message="Database table all create successfully!" />
+</target>
+<target  depends="init-properties" name="initDB" description="Initializing database data ">
+         <echo message="Start initalize data..." />
+         <sql
+                driver="${driverClass}"
+                url="${url}"
+                userid="${userName}"
+                password="${password}"
+                classpathref="local.class.path"
+                onerror="abort"
+          >
+		<!--Initialization of every item  Starting-->	
+		<fileset dir="sql/${dbtype}/1_bsp/INIT/2_Data">
+			<include name="*.sql"/>
+		</fileset>   
+		
+		<fileset dir="sql/${dbtype}/2_bpm/INIT/2_Data">
+			<include name="*.sql"/>    		
+		</fileset> 
+		
+		<fileset dir="sql/${dbtype}/3_mda/INIT/2_Data">
+			<include name="*.sql"/>
+		</fileset>
+		
+		<fileset dir="sql/${dbtype}/4_mp/INIT/2_Data">
+			<include name="*.sql"/>
+		</fileset>
+		
+		<fileset dir="sql/${dbtype}/5_common/INIT/2_Data">
+			<include name="*.sql"/>
+		</fileset> 
+		<!--Initialization of every item  Ending-->
+ 	   </sql>
+	   <echo message="Initalizing data all succeed!" />	
+</target>
+	
+	<!-- Primary task-->
+	<target name="main" description="==>Publish program,copy">
+		<antcall target="createDB"/>
+		<antcall target="initDB"/>
+	</target>
+</project>
